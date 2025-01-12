@@ -1,7 +1,9 @@
 import {ChangeEvent, FC, useState} from 'react'
-import {v4 as uuid} from 'uuid'
+import {v1} from 'uuid'
 import {ButtonComponent} from "./ButtonComponent";
 import {FilterValuesType} from "./App";
+import s from './TodolistItem.module.css'
+import appS from './App.module.css'
 
 
 export type TaskType = {
@@ -14,7 +16,7 @@ export type TodolistPropsType = {
     title: string
     tasks: Array<TaskType>
     date?: string
-    deletedTask: (id: string) => void
+    removeTask: (id: string) => void
     addNewTasks: (taskTitle: string) => void
     selectedCheckbox: (isDone: boolean, idCheckBox: string) => void
     changeFilter: (filt: FilterValuesType) => void
@@ -24,12 +26,12 @@ export type TodolistPropsType = {
 
 export const TodolistItem: FC<TodolistPropsType> = (props) => {
 
-    let {title, tasks, deletedTask, addNewTasks, selectedCheckbox, changeFilter} = {...props}
+    let {title, tasks, removeTask, addNewTasks, selectedCheckbox, changeFilter} = props
 
     const [inputValue, setInputValue] = useState('')
 
     const listItems: JSX.Element[] = tasks.map((t) => {
-        const keyId = uuid()
+        const keyId = v1()
         const {isDone, title, id} = {...t}
         return (
             <li key={keyId}>
@@ -37,7 +39,7 @@ export const TodolistItem: FC<TodolistPropsType> = (props) => {
                        onChange={(e) => onChangeCheckboxHandler(e, id)}
                        checked={isDone}
                 /> <span>{title}</span>
-                <ButtonComponent title={'x'} callBack={() => deletedTask(id)}/>
+                <ButtonComponent title={'x'} callBack={() => removeTask(id)}/>
             </li>
         )
     })
@@ -56,21 +58,39 @@ export const TodolistItem: FC<TodolistPropsType> = (props) => {
         selectedCheckbox(e.currentTarget.checked, id)
     }
     const addNewTasksHandler = () => {
-        addNewTasks(inputValue)
+        inputValue !== '' ? addNewTasks(inputValue) : alert('Напиши что-нибудь, плиз')
         setInputValue('')
+    }
+
+    const onKeyPressHandler = (e: KeyboardEvent) => {
+        if (e.key === 'Enter') addNewTasksHandler()
     }
 
 
     return (
-        <div className="todolist">
+        <div className={appS.todolist}>
 
             <h3>{title}</h3>
             <div>
-                <input value={inputValue}
+
+                <input className={!inputValue
+                    ? s.inputTodoNotActive
+                    : s.inputTodoActive
+                }
+                       value={inputValue}
                        type={"text"}
-                       onChange={(event) => onChangeHandler(event)}
+                       onChange={(e) => onChangeHandler(e)}
+                       onKeyUp={(e) => onKeyPressHandler(e)}
                 />
-                <ButtonComponent title={'+'} callBack={addNewTasksHandler}/>
+                <ButtonComponent title={'+'}
+                                 useStateValue={inputValue}
+                                 callBack={addNewTasksHandler}
+                />
+                {inputValue.length === 0
+                    ? <div style={{color: 'red'}}>Напечатай что-нибудь</div>
+                    : <div style={{color: 'blue'}}>Печатай, красавичк</div>
+                }
+
             </div>
             <div>
                 {tasksList}

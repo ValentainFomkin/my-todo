@@ -3,10 +3,12 @@ import {FC} from "react";
 type ButtonType = {
     title: string
     callBack: () => void
+    useStateValue?: string
+    
 }
 
 export const ButtonComponent: FC<ButtonType> = (props) => {
-    const {title, callBack} = {...props}
+    const {title, callBack, useStateValue} = {...props}
 
     const onClickHandler = () => {
         callBack()
@@ -14,7 +16,9 @@ export const ButtonComponent: FC<ButtonType> = (props) => {
 
 
     return (
-        <button onClick={onClickHandler}>
+        <button onClick={onClickHandler}
+                disabled={useStateValue === ''}
+        >
             {title}
         </button>
     );
