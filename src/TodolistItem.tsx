@@ -62,7 +62,7 @@ export const TodolistItem: FC<TodolistPropsType> = (props) => {
         setInputValue('')
     }
 
-    const onKeyPressHandler = (e: KeyboardEvent) => {
+    const onKeyPressHandler = (e: React.KeyboardEvent<HTMLInputElement>) => {
         if (e.key === 'Enter') addNewTasksHandler()
     }
 
