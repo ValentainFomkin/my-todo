@@ -30,7 +30,7 @@ export const TodolistItem: FC<TodolistPropsType> = (props) => {
 
     const [inputValue, setInputValue] = useState('')
 
-    const listItems: JSX.Element[] = tasks.map((t) => {
+    const listItems = tasks.map((t) => {
         const keyId = v1()
         const {isDone, title, id} = {...t}
         return (
@@ -45,7 +45,7 @@ export const TodolistItem: FC<TodolistPropsType> = (props) => {
     })
 
 
-    const tasksList: JSX.Element[] | JSX.Element = tasks.length
+    const tasksList = tasks.length
         ? <ul>{listItems}</ul>
         : <p>тасок нет</p>
 
