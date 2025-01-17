@@ -95,7 +95,7 @@ export const TodolistItem = (props: Props) => {
                 <Button title={'+'} onClick={createTaskHandler}/>
                 {error && <div className={'error-message'}>{error}</div>}
             </div>
-            {tasks.length === 0 ? (
+            {filteredTasks.length === 0 ? (
                 <p>Тасок нет</p>
             ) : (
                 <ul>
