@@ -1,73 +1,64 @@
-import appSt from './App.module.css'
-import {TaskType, TodolistItem} from './TodolistItem'
-import {ButtonComponent} from "./ButtonComponent";
+import './App.css'
+import {useState} from 'react'
 import {v1} from 'uuid'
-import {useState} from "react";
+import {TodolistItem} from './TodolistItem'
 
-export type FilterValuesType = 'all' | 'active' | 'completed'
-
-export const App = () => {
-//BLL
-    const todolistTitle: string = 'what to lean'
-    let [tasks, setTasks] = useState<TaskType[]>([
-        {id: v1(), isDone: true, title: 'HTML&CSS'},
-        {id: v1(), isDone: true, title: 'REDUX'}
-    ])
-    const [filter, setFilter] = useState<FilterValuesType>('all')
-
-    const removeTask = (taskId: string) => {
-        const nextState: TaskType[] = tasks.filter(t => t.id !== taskId)
-        setTasks(nextState)
-    }
-
-    const addNewTasks = (taskTitle: string) => {
-        let newTask: TaskType = {id: v1(), isDone: false, title: taskTitle}
-        let newTasks: TaskType[] = [newTask, ...tasks]
-        setTasks(newTasks)
-    }
-
-    const selectedCheckbox = (isDoneCheckbox: boolean, idCheckbox: string) => {
-        let newTasksIsDone: TaskType[] = tasks.map(t => t.id === idCheckbox ? {...t, isDone: isDoneCheckbox} : t)
-        setTasks(newTasksIsDone)
-    }
-
-    const changeFilter = (filt: FilterValuesType) => {
-        setFilter(filt)
-    }
-
-    const getFilteredTasks = (allTasks: TaskType[], filterValue: FilterValuesType): TaskType[] => {
-        switch (filterValue) {
-            case "active":
-                return allTasks.filter(t => !t.isDone)
-            case "completed":
-                return allTasks.filter(t => t.isDone)
-            default:
-                return allTasks
-        }
-    }
-
-
-    const filteredTasksForRender: TaskType[] = getFilteredTasks(tasks, filter)
-
-//UI
-    return (
-        <div className={appSt.app}>
-            <div>
-                <ButtonComponent title={'ADD NEW TODOLIST'} callBack={() => {
-                }}/>
-            </div>
-            <TodolistItem
-                tasks={filteredTasksForRender}
-                title={todolistTitle}
-                removeTask={removeTask}
-                addNewTasks={addNewTasks}
-                selectedCheckbox={selectedCheckbox}
-                changeFilter={changeFilter}
-            />
-        </div>
-    )
-
-
+export type Task = {
+  id: string
+  title: string
+  isDone: boolean
 }
 
+export type FilterValues = 'all' | 'active' | 'completed'
 
+export const App = () => {
+  const [filter, setFilter] = useState<FilterValues>('all')
+
+  const [tasks, setTasks] = useState<Task[]>([
+    { id: v1(), title: 'HTML&CSS', isDone: true },
+    { id: v1(), title: 'JS', isDone: true },
+    { id: v1(), title: 'ReactJS', isDone: false },
+  ])
+
+  const deleteTask = (taskId: string) => {
+    const filteredTasks = tasks.filter(task => {
+      return task.id !== taskId
+    })
+    setTasks(filteredTasks)
+  }
+
+  const changeFilter = (filter: FilterValues) => {
+    setFilter(filter)
+  }
+
+  let filteredTasks = tasks
+  if (filter === 'active') {
+    filteredTasks = tasks.filter(task => !task.isDone)
+  }
+  if (filter === 'completed') {
+    filteredTasks = tasks.filter(task => task.isDone)
+  }
+
+  const createTask = (title: string) => {
+    const newTask = {id: v1(), title, isDone: false}
+    const newTasks = [newTask, ...tasks]
+    setTasks(newTasks)
+  }
+
+  const changeTaskStatus = (taskId: string, isDone: boolean) => {
+    const newState = tasks.map(task => task.id == taskId ? { ...task, isDone } : task)
+    setTasks(newState)
+  }
+
+  return (
+      <div className="app">
+        <TodolistItem title="What to learn"
+                      tasks={filteredTasks}
+                      deleteTask={deleteTask}
+                      changeFilter={changeFilter}
+                      createTask={createTask}
+                      changeTaskStatus={changeTaskStatus}
+                      filter={filter}/>
+      </div>
+  )
+}
