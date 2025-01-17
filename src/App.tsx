@@ -91,7 +91,7 @@ export const App = () => {
                        type={"text"}/>
                 <Button title={'Add new todolist'} onClick={() => addNewTodoHandler(todoTitle)}/>
             </div>
-            {todolists.length === 0 ? 'error' : todolists.map((tl, index) => {
+            {todolists.length === 0 ? 'error' : todolists.map((tl) => {
                 return (
                     <div key={crypto.randomUUID()}>
                         <TodolistItem title={tl.title}
