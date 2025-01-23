@@ -1,51 +1,48 @@
-import {ChangeEvent, FC, useState} from 'react';
-import {AddItemForm} from "./AddItemForm";
+import {type ChangeEvent, useState} from 'react'
+import TextField from '@mui/material/TextField';
 
-export type EditableSpanType = {
+type Props = {
     value: string
-    // onChange: (event: ChangeEvent<HTMLInputElement>) => void
-    changeTitle?: (title: string) => void
-
+    onChange: (title: string) => void
 }
 
-export const EditableSpan: FC<EditableSpanType> = (props) => {
-    const {value, changeTitle} = props
-    const [isEditMode, setIsEditMode] = useState(true)
-    const [inputValue, setInputValue] = useState('')
-    const [error, setError] = useState('')
+export const EditableSpan = ({value, onChange}: Props) => {
+    const [title, setTitle] = useState(value)
+    const [isEditMode, setIsEditMode] = useState(false)
+    const [error, setError] = useState<string | null>(null)
 
-    const onBlurHandler = () => {
-        if (inputValue.trim() !== '') {
-            changeTitle!(inputValue)
-            setIsEditMode(true)
-            setError('')
-        } else {
-            setError('Title is required')
-        }
+
+    const turnOnEditMode = () => {
+        setIsEditMode(true)
+    }
+
+    const turnOffEditMode = () => {
+        if (title.trim() !== '') {
+            setIsEditMode(false)
+            onChange(title)
+        } else setError('Title is required')
 
     }
 
-    const onChangeHandler = (e: ChangeEvent<HTMLInputElement>) => {
-        let event = e.currentTarget.value
-        if (event.trim() !== '') {
-            setInputValue(event)
-            setError('')
-        }
+    const changeTitle = (event: ChangeEvent<HTMLInputElement>) => {
+        setTitle(event.currentTarget.value)
     }
 
     return (
         <>
-            {isEditMode ?
-                <span onDoubleClick={() => setIsEditMode(false)}>{value}</span>
-                : <AddItemForm titleInput={inputValue}
-                               error={error}
-                               onChange={(e) => onChangeHandler(e)}
-                               onKeyUp={onBlurHandler}
-                               onBlur={onBlurHandler}/>
-            }
-            {error && <div className={'error-message'}>{error}</div>}
+            {isEditMode ? (
+                <TextField value={title}
+                           error={!!error}
+                           onChange={changeTitle}
+                           onBlur={turnOffEditMode}
+                           autoFocus
+                           id="standard-basic"
+                           label={error ? error : 'type something'}
+                           variant="standard"/>
+                // <input value={title} onChange={changeTitle} onBlur={turnOffEditMode} autoFocus />
+            ) : (
+                <span onDoubleClick={turnOnEditMode}>{value}</span>
+            )}
         </>
-
-    );
-};
-
+    )
+}

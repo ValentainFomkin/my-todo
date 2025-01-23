@@ -1,9 +1,9 @@
 import './App.css'
-import {ChangeEvent, useState} from 'react'
+import {useState} from 'react'
 import {v1} from 'uuid'
+import {CreateItemForm} from './CreateItemForm'
 import {TodolistItem} from './TodolistItem'
-import {AddItemForm} from "./AddItemForm";
-import {Button} from "./Button";
+import {AppBar} from "./AppBar";
 
 export type Todolist = {
     id: string
@@ -41,44 +41,26 @@ export const App = () => {
             {id: v1(), title: 'GraphQL', isDone: false},
         ],
     })
-    let [todoTitle, setTodoTitle] = useState('')
-    const [error, setError] = useState<string | null>(null)
-
-
-    const onchangeTodoTitle = (e: ChangeEvent<HTMLInputElement>) => {
-        let event = e.currentTarget.value
-        if (event.trim() !== '') {
-            setTodoTitle(event)
-            setError(null)
-        }
-    }
-
-    const onKeyUpHandler = () => {
-        createTodolist()
-    }
-
-    const createTodolist = () => {
-        let newTitle = todoTitle.trim()
-        let newTodo: Todolist = {id: v1(), title: newTitle, filter: 'all'}
-        if (newTitle !== '') {
-            setTodolists([newTodo, ...todolists])
-            setTasks({...tasks, [newTodo.id]: []})
-            setTodoTitle('')
-            setError(null)
-        } else {
-            setError('Title is required')
-        }
-
-    }
 
     const changeFilter = (todolistId: string, filter: FilterValues) => {
         setTodolists(todolists.map(todolist => todolist.id === todolistId ? {...todolist, filter} : todolist))
+    }
+
+    const createTodolist = (title: string) => {
+        const todolistId = v1()
+        const newTodolist: Todolist = {id: todolistId, title, filter: 'all'}
+        setTodolists([newTodolist, ...todolists])
+        setTasks({...tasks, [todolistId]: []})
     }
 
     const deleteTodolist = (todolistId: string) => {
         setTodolists(todolists.filter(todolist => todolist.id !== todolistId))
         delete tasks[todolistId]
         setTasks({...tasks})
+    }
+
+    const changeTodolistTitle = (todolistId: string, title: string) => {
+        setTodolists(todolists.map(todolist => todolist.id === todolistId ? {...todolist, title} : todolist))
     }
 
     const deleteTask = (todolistId: string, taskId: string) => {
@@ -95,24 +77,13 @@ export const App = () => {
     }
 
     const changeTaskTitle = (todolistId: string, taskId: string, title: string) => {
-        setTasks({...tasks, [todolistId]: tasks[todolistId].map(task => task.id == taskId ? {...task, title} : task)})
-    }
-    const changeTodoTitle = (todolistId: string, title: string) => {
-        setTodolists(todolists.map(e => e.id === todolistId ? {...e, title} : e))
+        setTasks({...tasks, [todolistId]: tasks[todolistId].map(task => task.id === taskId ? {...task, title} : task)})
     }
 
     return (
         <div className="app">
-            <div>
-                <AddItemForm titleInput={todoTitle}
-                             error={error}
-                             onChange={(e) => onchangeTodoTitle(e)}
-                             onKeyUp={onKeyUpHandler}
-                />
-                <Button title={'+'} onClick={createTodolist}/>
-                {error && <div className={'error-message'}>{error}</div>}
-            </div>
-
+            <AppBar/>
+            <CreateItemForm onCreateItem={createTodolist}/>
             {todolists.map(todolist => {
                 const todolistTasks = tasks[todolist.id]
                 let filteredTasks = todolistTasks
@@ -133,8 +104,7 @@ export const App = () => {
                                   changeTaskStatus={changeTaskStatus}
                                   deleteTodolist={deleteTodolist}
                                   changeTaskTitle={changeTaskTitle}
-                                  changeTodoTitle={changeTodoTitle}
-                    />
+                                  changeTodolistTitle={changeTodolistTitle}/>
                 )
             })}
         </div>
