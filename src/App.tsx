@@ -1,9 +1,10 @@
-import './App.css'
 import {useState} from 'react'
 import {v1} from 'uuid'
 import {CreateItemForm} from './CreateItemForm'
 import {TodolistItem} from './TodolistItem'
-import {AppBar} from "./AppBar";
+import {ButtonAppBar} from "./ButtonAppBar";
+import Paper from '@mui/material/Paper';
+import s from './App.module.css'
 
 export type Todolist = {
     id: string
@@ -81,32 +82,53 @@ export const App = () => {
     }
 
     return (
-        <div className="app">
-            <AppBar/>
-            <CreateItemForm onCreateItem={createTodolist}/>
-            {todolists.map(todolist => {
-                const todolistTasks = tasks[todolist.id]
-                let filteredTasks = todolistTasks
-                if (todolist.filter === 'active') {
-                    filteredTasks = todolistTasks.filter(task => !task.isDone)
-                }
-                if (todolist.filter === 'completed') {
-                    filteredTasks = todolistTasks.filter(task => task.isDone)
-                }
+        <div className={s.app}>
+            <ButtonAppBar/>
 
-                return (
-                    <TodolistItem key={todolist.id}
-                                  todolist={todolist}
-                                  tasks={filteredTasks}
-                                  deleteTask={deleteTask}
-                                  changeFilter={changeFilter}
-                                  createTask={createTask}
-                                  changeTaskStatus={changeTaskStatus}
-                                  deleteTodolist={deleteTodolist}
-                                  changeTaskTitle={changeTaskTitle}
-                                  changeTodolistTitle={changeTodolistTitle}/>
-                )
-            })}
+            <div className={s.wrapper}>
+                <div className={s.itemForm}>
+                    <CreateItemForm onCreateItem={createTodolist}/>
+                </div>
+                <div key={crypto.randomUUID()} className={s.todos}>
+
+                    {todolists.map(todolist => {
+                        const todolistTasks = tasks[todolist.id]
+                        let filteredTasks = todolistTasks
+                        if (todolist.filter === 'active') {
+                            filteredTasks = todolistTasks.filter(task => !task.isDone)
+                        }
+                        if (todolist.filter === 'completed') {
+                            filteredTasks = todolistTasks.filter(task => task.isDone)
+                        }
+                        const style = {
+                            display: 'flex',
+                            flexDirection: 'row',
+                            padding: '30px',
+                            justifyContent: 'center',
+                            marginRight: '40px',
+                            borderRadius: '20px'
+                        }
+                        return (
+                            <Paper style={style} key={crypto.randomUUID()} elevation={3}>
+
+                                <TodolistItem key={todolist.id}
+                                              todolist={todolist}
+                                              tasks={filteredTasks}
+                                              deleteTask={deleteTask}
+                                              changeFilter={changeFilter}
+                                              createTask={createTask}
+                                              changeTaskStatus={changeTaskStatus}
+                                              deleteTodolist={deleteTodolist}
+                                              changeTaskTitle={changeTaskTitle}
+                                              changeTodolistTitle={changeTodolistTitle}/>
+                            </Paper>
+
+                        )
+                    })}
+                </div>
+
+            </div>
+
         </div>
     )
 }

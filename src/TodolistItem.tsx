@@ -6,6 +6,7 @@ import IconButton from '@mui/material/IconButton';
 import DeleteIcon from '@mui/icons-material/Delete';
 import Checkbox from '@mui/material/Checkbox';
 import Button from '@mui/material/Button';
+import s from './App.module.css'
 
 type Props = {
     todolist: Todolist
@@ -50,7 +51,7 @@ export const TodolistItem = (props: Props) => {
 
     return (
         <div>
-            <div className={'container'}>
+            <div className={s.container}>
                 <h3>
                     <EditableSpan value={title} onChange={changeTodolistTitleHandler}/>
                 </h3>
