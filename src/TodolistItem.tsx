@@ -2,11 +2,14 @@ import type {ChangeEvent} from 'react'
 import type {FilterValues, Task, Todolist} from './App'
 import {CreateItemForm} from './CreateItemForm'
 import {EditableSpan} from './EditableSpan'
-import IconButton from '@mui/material/IconButton';
-import DeleteIcon from '@mui/icons-material/Delete';
-import Checkbox from '@mui/material/Checkbox';
-import Button from '@mui/material/Button';
-import s from './App.module.css'
+import Checkbox from '@mui/material/Checkbox'
+import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
+import IconButton from '@mui/material/IconButton'
+import DeleteIcon from '@mui/icons-material/Delete'
+import List from '@mui/material/List'
+import ListItem from '@mui/material/ListItem'
+import {containerSx, getListItemSx} from './TodolistItem.styles'
 
 type Props = {
     todolist: Todolist
@@ -51,20 +54,19 @@ export const TodolistItem = (props: Props) => {
 
     return (
         <div>
-            <div className={s.container}>
+            <div className={'container'}>
                 <h3>
                     <EditableSpan value={title} onChange={changeTodolistTitleHandler}/>
                 </h3>
-                <IconButton onClick={deleteTodolistHandler} aria-label="delete">
+                <IconButton onClick={deleteTodolistHandler}>
                     <DeleteIcon/>
                 </IconButton>
-                {/*<Button title={'x'} onClick={deleteTodolistHandler}/>*/}
             </div>
             <CreateItemForm onCreateItem={createTaskHandler}/>
             {tasks.length === 0 ? (
                 <p>Тасок нет</p>
             ) : (
-                <ul>
+                <List>
                     {tasks.map(task => {
                         const deleteTaskHandler = () => {
                             deleteTask(id, task.id)
@@ -78,44 +80,38 @@ export const TodolistItem = (props: Props) => {
                         const changeTaskTitleHandler = (title: string) => {
                             changeTaskTitle(id, task.id, title)
                         }
-                        const label = {inputProps: {'aria-label': 'Checkbox demo'}};
+
                         return (
-                            <li key={task.id} className={task.isDone ? 'is-done' : ''}>
-                                <Checkbox {...label} defaultChecked checked={task.isDone}
-                                          onChange={changeTaskStatusHandler}/>
-                                {/*<input type="checkbox" checked={task.isDone}*/}
-                                {/*       onChange={changeTaskStatusHandler}/>*/}
-                                <EditableSpan value={task.title} onChange={changeTaskTitleHandler}/>
-                                <IconButton onClick={deleteTaskHandler} aria-label="delete">
+                            <ListItem key={task.id} sx={getListItemSx(task.isDone)}>
+                                <div>
+                                    <Checkbox checked={task.isDone} onChange={changeTaskStatusHandler}/>
+                                    <EditableSpan value={task.title} onChange={changeTaskTitleHandler}/>
+                                </div>
+                                <IconButton onClick={deleteTaskHandler}>
                                     <DeleteIcon/>
                                 </IconButton>
-                                {/*<Button title={'x'} onClick={deleteTaskHandler}/>*/}
-                            </li>
+                            </ListItem>
                         )
                     })}
-                </ul>
+                </List>
             )}
-            <div>
-                <Button onClick={() => changeFilterHandler('all')}
-                        variant={filter === 'all' ? 'outlined' : 'contained'}
-                        color="success">All</Button>
-                <Button onClick={() => changeFilterHandler('active')}
-                        variant={filter === 'active' ? 'outlined' : 'contained'}
-                        color="primary">Active</Button>
-                <Button onClick={() => changeFilterHandler('completed')}
-                        variant={filter === 'completed' ? 'outlined' : 'contained'}
-                        color="error">Completed</Button>
-
-                {/*  <Button className={filter === 'all' ? 'active-filter' : ''}*/}
-                {/*          title={'All'}*/}
-                {/*          onClick={() => changeFilterHandler('all')}/>*/}
-                {/*  <Button className={filter === 'active' ? 'active-filter' : ''}*/}
-                {/*          title={'Active'}*/}
-                {/*          onClick={() => changeFilterHandler('active')}/>*/}
-                {/*  <Button className={filter === 'completed' ? 'active-filter' : ''}*/}
-                {/*          title={'Completed'}*/}
-                {/*          onClick={() => changeFilterHandler('completed')}/>*/}
-            </div>
+            <Box sx={containerSx}>
+                <Button variant={filter === 'all' ? 'outlined' : 'text'}
+                        color={'inherit'}
+                        onClick={() => changeFilterHandler('all')}>
+                    All
+                </Button>
+                <Button variant={filter === 'active' ? 'outlined' : 'text'}
+                        color={'primary'}
+                        onClick={() => changeFilterHandler('active')}>
+                    Active
+                </Button>
+                <Button variant={filter === 'completed' ? 'outlined' : 'text'}
+                        color={'secondary'}
+                        onClick={() => changeFilterHandler('completed')}>
+                    Completed
+                </Button>
+            </Box>
         </div>
     )
 }
