@@ -1,4 +1,4 @@
-import {Todolist} from "../App";
+import {FilterValues, Todolist} from "../App";
 
 export const todolistReducer = (state: Todolist[], action: ActionType): Todolist[] => {
     switch (action.type) {
@@ -16,6 +16,10 @@ export const todolistReducer = (state: Todolist[], action: ActionType): Todolist
             let payload = action.payload
             return state.map(e => e.id === payload.todolistId ? {...e, title: payload.title} : e)
         }
+        case "CHANGE_TODOLIST_FILTER": {
+            let payload = action.payload
+            return state.map(e => e.id === payload.todolistId ? {...e, filter: payload.filter} : e)
+        }
 
         default:
             return state
@@ -27,12 +31,14 @@ export const todolistReducer = (state: Todolist[], action: ActionType): Todolist
 const CREATE_TODOLIST = 'CREATE_TODOLIST'
 const DELETE_TODOLIST = 'DELETE_TODOLIST'
 const CHANGE_TODOLIST_TITLE = 'CHANGE_TODOLIST_TITLE'
+const CHANGE_TODOLIST_FILTER = 'CHANGE_TODOLIST_FILTER'
 
 type createTodolistACType = ReturnType<typeof createTodolistAC>
 type deleteTodolistACType = ReturnType<typeof deleteTodolistAC>
 type changeTodolistTitleACType = ReturnType<typeof changeTodolistTitleAC>
+type changeFilterACType = ReturnType<typeof changeFilterAC>
 
-type ActionType = createTodolistACType | deleteTodolistACType | changeTodolistTitleACType
+type ActionType = createTodolistACType | deleteTodolistACType | changeTodolistTitleACType | changeFilterACType
 
 
 export const createTodolistAC = (todolistId: string, title: string) => {
@@ -48,9 +54,17 @@ export const deleteTodolistAC = (todolistId: string) => {
         payload: {todolistId}
     } as const
 }
+
 export const changeTodolistTitleAC = (todolistId: string, title: string) => {
     return {
         type: CHANGE_TODOLIST_TITLE,
         payload: {todolistId, title}
+    } as const
+}
+
+export const changeFilterAC = (todolistId: string, filter: FilterValues) => {
+    return {
+        type: CHANGE_TODOLIST_FILTER,
+        payload: {todolistId, filter}
     } as const
 }
